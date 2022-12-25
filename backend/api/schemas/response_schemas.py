@@ -4,4 +4,4 @@ from typing import Any, List, Dict, Tuple, Union, Optional, Literal
 
 class InferenceResponse(BaseModel):
     sentence: str
-    sentiment: Literal["positive", "negative"]
+    sentiment: Literal["positive", "negative", "neutral"]
