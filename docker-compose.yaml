@@ -1,0 +1,15 @@
+version: '2'
+services:
+  backend:
+    build: ./backend
+    command: python3 -m uvicorn main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+  frontend:
+    build: ./frontend
+    command: npm run start
+    ports:
+      - "3000:3000"
+    volumes:
+      - /frontend/node_modules
+      - .:/frontend
