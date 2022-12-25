@@ -21,14 +21,8 @@ from utils.preprocessing import preprocess_sentence
 
 class TextClassifier:
     def __init__(
-        self,
-        corpus: Union[np.array, pd.Series, List[str], Tuple[str], Set[str]] = [],
-        *args: Optional[List[Any]],
-        **kwargs: Optional[Dict[str, Any]]
+        self, *args: Optional[List[Any]], **kwargs: Optional[Dict[str, Any]]
     ) -> None:
-        self.corpus: Union[
-            np.array, pd.Series, List[str], Tuple[str], Set[str]
-        ] = corpus
         self.vectorizer: TfidfVectorizer = TfidfVectorizer(
             # max_features=2500,
             # min_df=7,
@@ -42,7 +36,9 @@ class TextClassifier:
 
     def train_vectorizer(
         self,
+        corpus: Union[np.array, pd.Series, List[str], Tuple[str], Set[str]] = [],
     ) -> None:
+        self.corpus = corpus
         self.vectorizer.fit(self.corpus)
         self.vectorizer_fitted = True
 
@@ -86,13 +82,20 @@ class TextClassifier:
         *args: Optional[List[Any]],
         **kwargs: Optional[Dict[str, Any]]
     ) -> str:
+        print("Sentence is of type = ", type(sentence))
         sentence = preprocess_sentence(sentence)
-        if not self.vectorizer_fitted:
-            self.train_vectorizer()
-        sentence = self.vectorizer.transform(sentence)
+        sentence = self.vectorizer.transform([sentence])
         return self.classifier_model.predict(sentence)
 
-    def load_model(self, classifier: str, vectorizer: str) -> None:
+    def load_model(
+        self,
+        classifier: str = (
+            BASE_DIR / "models" / "scikit_learn" / "weights" / "classifier" / "best.pkl"
+        ).absolute(),
+        vectorizer: str = (
+            BASE_DIR / "models" / "scikit_learn" / "weights" / "vectorizer" / "best.pkl"
+        ).absolute(),
+    ) -> None:
         with open(classifier, "rb") as f:
             self.classifier_model = pickle.load(f)
 
