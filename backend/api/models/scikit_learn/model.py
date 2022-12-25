@@ -36,7 +36,6 @@ class TextClassifier:
             stop_words=stopwords.words("english"),
         )
         self.vectorizer_fitted = kwargs.get("vectorizer_fitted", False)
-        self.processed_features: np.array = np.array([])
         self.classifier_model: RandomForestClassifier = RandomForestClassifier(
             random_state=42
         )
@@ -50,16 +49,18 @@ class TextClassifier:
     def vectorize(
         self, sentences: Union[pd.Series, np.array, List[str], Tuple[str], Set[str]]
     ) -> np.array:
-        return self.vectorizer.transform(sentences).toarray()
+        print("From vectorize(): ")
+        print("Input type = ", type(sentences))
+        transform = self.vectorizer.transform(sentences).toarray()
+        print("Output type = ", type(transform))
+        return transform
 
     def train(
         self,
-        word_vectors: Union[pd.DataFrame, pd.Series, np.ndarray, np.array],
+        word_vectors: Union[pd.Series, np.ndarray, np.array],
         train_sentiments: pd.Series,
     ):
-        self.classifier_model.fit(
-            word_vectors.to_numpy().reshape(-1, 1), train_sentiments
-        )
+        self.classifier_model.fit(word_vectors, train_sentiments)
 
     def test(
         self,
@@ -73,7 +74,7 @@ class TextClassifier:
                 test_sentiments, model_predictions
             ),
             "confusion_matrix": confusion_matrix(test_sentiments, model_predictions),
-            "f1_score": f1_score(test_sentiments, model_predictions),
+            # "f1_score": f1_score(test_sentiments, model_predictions),
         }
 
     def get_report(self) -> Dict[str, Any]:
@@ -106,4 +107,4 @@ class TextClassifier:
         with open((loc / "classifier" / weights_name), "wb") as f:
             pickle.dump(self.classifier_model, f)
         with open((loc / "vectorizer" / weights_name), "wb") as f:
-            pickle.dump(self.vectorizer_model, f)
+            pickle.dump(self.vectorizer, f)
