@@ -15,6 +15,14 @@ def train(
     *args: Optional[List[Any]],
     **kwargs: Optional[Dict[str, Any]],
 ) -> None:
+    """Train the model on the source text.
+
+    Workflow:
+    0. Get the data directly, or from the source location.
+    1. Preprocess the text.
+    2. Convert the text to vectors.
+    3. Train the model on the vectors and the sentiments.
+    """
     if mode == "file":
         # exec(f"source_text = pd.read_{source_file_type}({source_text})")
         if source_file_type == "csv":
