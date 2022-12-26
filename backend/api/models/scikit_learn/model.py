@@ -121,7 +121,7 @@ class TextClassifier:
         weights_name: str = "best.pkl",
         loc: str = (BASE_DIR / "models" / "scikit_learn" / "weights"),
     ) -> None:
-        """Save the model to the weights."""
+        """Save the model objects using pkl format."""
         with open((loc / "classifier" / weights_name), "wb") as f:
             pickle.dump(self.classifier_model, f)
         with open((loc / "vectorizer" / weights_name), "wb") as f:
