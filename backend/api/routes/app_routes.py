@@ -4,7 +4,7 @@ from schemas.response_schemas import InferenceResponse
 from schemas.request_schemas import InferenceRequest
 from typing import Dict, Optional
 import pickle
-from models.scikit_learn.inference import infer
+from models.scikit_learn.inference import infer, get_report
 
 from models.scikit_learn.train import train
 
@@ -26,8 +26,15 @@ async def get_model_inference(request_model: InferenceRequest) -> Dict[str, str]
     }
 
 
+@app_router.get("/performace_report")
+async def get_performance_report() -> Dict[str, str]:
+    """Get the report of the model."""
+    return get_report()
+
+
 @app_router.get("/train")
 async def train_model() -> Dict[str, str]:
+    """Train the model."""
     print("Training started")
     train(
         mode="file",

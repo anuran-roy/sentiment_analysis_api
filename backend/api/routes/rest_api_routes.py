@@ -18,6 +18,7 @@ api_router: APIRouter = APIRouter(prefix="/api/v1", tags=["API"])
     status_code=status.HTTP_202_ACCEPTED,
 )
 async def get_model_inference(request_model: InferenceRequest) -> Dict[str, str]:
+    """Get the inference of the model.""" ""
     sentiment = infer(request_model.sentence)
 
     return {

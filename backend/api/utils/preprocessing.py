@@ -5,6 +5,7 @@ from typing import Optional, List, Any, Dict
 
 
 def remove_abbreviations(sentence: str) -> str:
+    """Remove abbreviations from a sentence."""
     abb_dict: Dict[str, str] = {
         "i'm": "i am",
         "i've": "i have",
@@ -94,6 +95,7 @@ def remove_abbreviations(sentence: str) -> str:
 def preprocess_sentence(
     sentence: str, *args: Optional[List[Any]], **kwargs: Optional[Dict[str, Any]]
 ) -> None:
+    """Preprocess the sentence, removing symbols, single characters, multiple spaces."""
     sentence = sentence.lower()
     sentence = remove_abbreviations(sentence)
     sentence = re.sub(r"\W", " ", str(sentence))

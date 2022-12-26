@@ -4,7 +4,8 @@ import os
 import re
 import pandas as pd
 import numpy as np
-from nltk.corpus import stopwords
+
+# from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import (
@@ -20,6 +21,12 @@ from utils.preprocessing import preprocess_sentence
 
 
 class TextClassifier:
+    """
+    Sentiment Classifier using Scikit-Learn.
+    It uses a Random Forest Classifier as the base classifier model.
+    We use TF-IDF as the vectorizer to convert words to vectors and pass the resultant vectors as output.
+    """
+
     def __init__(
         self, *args: Optional[List[Any]], **kwargs: Optional[Dict[str, Any]]
     ) -> None:
@@ -27,7 +34,7 @@ class TextClassifier:
             # max_features=2500,
             # min_df=7,
             # max_df=0.8,
-            stop_words=stopwords.words("english"),
+            # stop_words=stopwords.words("english"),
         )
         self.vectorizer_fitted = kwargs.get("vectorizer_fitted", False)
         self.classifier_model: RandomForestClassifier = RandomForestClassifier(
@@ -38,6 +45,7 @@ class TextClassifier:
         self,
         corpus: Union[np.array, pd.Series, List[str], Tuple[str], Set[str]] = [],
     ) -> None:
+        """Train the vectorizer on the corpus."""
         self.corpus = corpus
         self.vectorizer.fit(self.corpus)
         self.vectorizer_fitted = True
@@ -45,10 +53,11 @@ class TextClassifier:
     def vectorize(
         self, sentences: Union[pd.Series, np.array, List[str], Tuple[str], Set[str]]
     ) -> np.array:
-        print("From vectorize(): ")
-        print("Input type = ", type(sentences))
+        """Convert the sentences to vectors using the trained vectorizer."""
+        # print("From vectorize(): ")
+        # print("Input type = ", type(sentences))
         transform = self.vectorizer.transform(sentences).toarray()
-        print("Output type = ", type(transform))
+        # print("Output type = ", type(transform))
         return transform
 
     def train(
@@ -56,6 +65,7 @@ class TextClassifier:
         word_vectors: Union[pd.Series, np.ndarray, np.array],
         train_sentiments: pd.Series,
     ):
+        """Train the classifier model on the word vectors and the sentiments."""
         self.classifier_model.fit(word_vectors, train_sentiments)
 
     def test(
@@ -63,6 +73,7 @@ class TextClassifier:
         test_sentences: Union[pd.DataFrame, pd.Series],
         test_sentiments: pd.Series,
     ) -> Dict[str, Any]:
+        """Test the model on the test data."""
         model_predictions: np.array = self.classifier_model.predict(test_sentences)
         self.model_report: Dict[str, Any] = {
             "accuracy": accuracy_score(test_sentiments, model_predictions),
@@ -74,6 +85,7 @@ class TextClassifier:
         }
 
     def get_report(self) -> Dict[str, Any]:
+        """Get the report of the model."""
         return self.model_report
 
     def inference(
@@ -82,7 +94,8 @@ class TextClassifier:
         *args: Optional[List[Any]],
         **kwargs: Optional[Dict[str, Any]]
     ) -> str:
-        print("Sentence is of type = ", type(sentence))
+        """Infer the sentiment of a sentence."""
+        # print("Sentence is of type = ", type(sentence))
         sentence = preprocess_sentence(sentence)
         sentence = self.vectorizer.transform([sentence])
         return self.classifier_model.predict(sentence)
@@ -96,6 +109,7 @@ class TextClassifier:
             BASE_DIR / "models" / "scikit_learn" / "weights" / "vectorizer" / "best.pkl"
         ).absolute(),
     ) -> None:
+        """Load the model from the weights."""
         with open(classifier, "rb") as f:
             self.classifier_model = pickle.load(f)
 
@@ -107,6 +121,7 @@ class TextClassifier:
         weights_name: str = "best.pkl",
         loc: str = (BASE_DIR / "models" / "scikit_learn" / "weights"),
     ) -> None:
+        """Save the model to the weights."""
         with open((loc / "classifier" / weights_name), "wb") as f:
             pickle.dump(self.classifier_model, f)
         with open((loc / "vectorizer" / weights_name), "wb") as f:
